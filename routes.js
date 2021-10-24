@@ -1,11 +1,8 @@
 'use strict'
+const ProductoRoutes = require('./src/routes/Producto.route')
 
-module.exports = class Routes{
-
-    constructor(app){
-        this.app = app
-    }
-
-    load(){
-    }
+const loadRoutes = (app) => {
+    app.use('/', ProductoRoutes)
 }
+
+module.exports = loadRoutes
