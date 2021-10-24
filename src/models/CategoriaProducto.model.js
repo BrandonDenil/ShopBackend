@@ -3,5 +3,6 @@
 const mongoose = require('mongoose')
 
 module.exports= mongoose.model('Categoria',mongoose.Schema({
-    Categoria:String
+    Categoria:String,
+    Estado:Boolean
 }))

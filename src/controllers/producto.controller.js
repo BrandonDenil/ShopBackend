@@ -1,30 +1,96 @@
 'use strict'
 const Producto = require('../models/Producto.model')
+const Categoria = require('../models/CategoriaProducto.model')
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId;
 
-exports.listarProductos = (req, res) => {
-    if (!req.params.categoria) {
-        res.status(400).send({ message: "Categoria no puede estar vacio" })
-    }
-
-    Producto.find({ Categoria: req.params.categoria },{Nombre:1,Precio:1,Cantidad:1, Color:1, Marca:1}).then(data => {
-        res.status(200).send(data)
-    }).catch(err => {
-        res.status(500).send({
-            message:
-                err.message || "Error al obtener datos"
+exports.listarProducto = (req, res) => {
+    Producto.aggregate([
+        { $lookup: { from: "categorias", localField: "Categoria", foreignField: "_id", as: "_categoria" } },
+        { $lookup: { from: "marcas", localField: "Marca", foreignField: "_id", as: "_marca" } }
+    ]).then(data => {
+        const filteredData= data.map(item=>{
+            item.Categoria = item._categoria[0].Categoria
+            item.Marca = item._marca[0].Nombre
+            return item
         })
+        res.status(200).json(filteredData)
+    }).catch(error => {
+        res.status(500).json({ error: true, message: error || "Error interno" })
+    })
+}
+
+exports.listarProductosCategoria = (req, res) => {
+    Categoria.aggregate([
+        { $match: { _id: ObjectId(req.params.categoria) } },
+        {
+            $lookup: { from: "productos", localField: "_id", foreignField: "Categoria", as: "_productos" }
+        },
+        {
+            $lookup: { from: "marcas", localField: "_id", foreignField: "Marca", as: "_marcas" }
+        },
+        {
+            $project: {
+                "_id": 0,
+                "Categoria": 1,
+                "_productos.Nombre": 1,
+                "_productos.Precio": 1,
+                "_productos.Cantidad": 1,
+                "_productos.Descripcion": 1,
+                "_productos.Descuento": 1,
+                "_productos.Resenias": 1,
+                "_marcas.Nombre": 1
+            }
+        }
+    ])
+        .then(data => {
+            res.status(200).json(data)
+        }).catch(err => {
+            res.status(500).json({
+                message:
+                    err.message || "Error al obtener datos"
+            })
+        })
+
+}
+
+exports.nuevoProducto = async (req, res) => {
+    const _details = {
+        Nombre: req.body.Nombre,
+        Precio: req.body.Precio,
+        Cantidad: req.body.Cantidad,
+        Descripcion: req.body.Descripcion,
+        Categoria: req.body.Categoria,
+        Marca: req.body.Marca
+    }
+    const _newProducto = new Producto(_details)
+
+    _newProducto.save().then(saveDoc => {
+        console.log(saveDoc)
+        res.json({ message: "OK" })
+    })
+}
+
+exports.actualizarProducto = async (req, res) => {
+    const _newProducto = Producto.findByIdAndUpdate(req.params.id, {
+        Nombre: req.body.Nombre,
+        Precio: req.body.Precio,
+        Cantidad: req.body.Cantidad,
+        Descripcion: req.body.Descripcion,
+        Categoria: req.body.Categoria,
+        Marca: req.body.Marca
     })
 
+    _newProducto.save().then(saveDoc => {
+        res.status(200).send({ message: "Elemento editado!", error: false })
+    })
 }
 
-exports.nuevoProducto = (req, res) => {
-
-}
-
-exports.actualizarProducto = (req, res) => {
-
-}
-
-exports.eliminarProducto = (req, res) => {
-
+exports.eliminarProducto = async (req, res) => {
+    if (!req.params.id) {
+        return res.status(500).send({ message: "Error en parametros", error: true })
+    }
+    Producto.findByIdAndDelete(req.params.id, () => {
+        return res.status(200).send({ message: "Elemento eliminado", error: false })
+    })
 }

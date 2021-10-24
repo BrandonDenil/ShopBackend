@@ -8,6 +8,11 @@ module.exports= mongoose.model('Producto',mongoose.Schema({
     Cantidad:Number, 
     Descripcion:String,
     Categoria:mongoose.ObjectId,
+    Marca:mongoose.ObjectId,
+    DetallesTecnicos:[{
+        Titulo:String,
+        Descripcion:String
+    }],
     Imagenes:[{
         Nombre:String,
         Url:String

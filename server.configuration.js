@@ -2,11 +2,19 @@
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const cors = require("cors")
-const nodemailer = require('nodemailer')
 const fileUpload = require('express-fileupload')
 const express = require("express")
+const path = require('path');
+const hbs = require('hbs');
+const nodemailer = require('nodemailer')
+
 
 module.exports = (app) => {
+    app.use(cors({
+        origin: 'http://localhost:3000',
+        methods: "GET, PUT,POST,DELETE",
+        credentials: true
+    }))
     app.use(fileUpload());
     app.use(express.json())
     app.use(cookieParser());
@@ -15,10 +23,6 @@ module.exports = (app) => {
         resave: false,
         saveUninitialized: true
     }))
-    app.use(cors({
-        origin: 'http://127.0.0.1:3000',
-        methods: "GET, PUT,POST,DELETE",
-        credentials: true
-    }))
+
 }
 
