@@ -7,6 +7,7 @@ const router = express.Router();
 router.get('/:categoria', ProductoController.listarProductosCategoria)
 router.get('/', ProductoController.listarProducto)
 router.put('/:id', ProductoController.actualizarProducto)
+router.put('/imagenes/:id', ProductoController.agregarImagenesProducto)
 router.post('/', ProductoController.nuevoProducto)
 router.delete('/:id',ProductoController.eliminarProducto)
 

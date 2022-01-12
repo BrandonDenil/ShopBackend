@@ -5,5 +5,8 @@ const express = require('express')
 const router = express.Router()
 
 router.get('/', MarcaController.listarMarcas)
+router.post('/', MarcaController.nuevaMarca)
+router.put('/', MarcaController.editarMarca)
+
 
 module.exports = router

@@ -1,6 +1,8 @@
 'use strict'
 const Producto = require('../models/Producto.model')
 const Categoria = require('../models/CategoriaProducto.model')
+const fs = require('fs')
+const path = require('path')
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -9,7 +11,7 @@ exports.listarProducto = (req, res) => {
         { $lookup: { from: "categorias", localField: "Categoria", foreignField: "_id", as: "_categoria" } },
         { $lookup: { from: "marcas", localField: "Marca", foreignField: "_id", as: "_marca" } }
     ]).then(data => {
-        const filteredData= data.map(item=>{
+        const filteredData = data.map(item => {
             item.Categoria = item._categoria[0].Categoria
             item.Marca = item._marca[0].Nombre
             return item
@@ -55,20 +57,35 @@ exports.listarProductosCategoria = (req, res) => {
 }
 
 exports.nuevoProducto = async (req, res) => {
-    const _details = {
+
+    const _newProducto = new Producto({
         Nombre: req.body.Nombre,
         Precio: req.body.Precio,
         Cantidad: req.body.Cantidad,
         Descripcion: req.body.Descripcion,
         Categoria: req.body.Categoria,
-        Marca: req.body.Marca
-    }
-    const _newProducto = new Producto(_details)
-
-    _newProducto.save().then(saveDoc => {
-        console.log(saveDoc)
-        res.json({ message: "OK" })
+        Marca: req.body.Marca,
+        DetallesTecnicos: req.body.Detalles
     })
+
+    _newProducto.save((error, result) => {
+        return res.json({ message: "OK", error: false, id: result.id })
+    })
+}
+
+exports.agregarImagenesProducto = async (req, res) => {
+    const file = req.files.file
+    const path = `storage/${req.params.id}`
+    let images = []
+    for (let i = 0; i < file.length; i++) {
+        fs.mkdir(`${path}`, err => {
+            file[i].mv(path.resolve(`${path}/${file[i].name}`), err => {
+                images.push({ Url: `${path}/${file[i].name}`, Nombre: file[i].name })
+            })
+        })
+    }
+
+    return res.status(200).json({ Message: "OK", error: false })
 }
 
 exports.actualizarProducto = async (req, res) => {

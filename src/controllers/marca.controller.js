@@ -11,9 +11,9 @@ exports.listarMarcas = (req, res) => {
 
 exports.nuevaMarca = (req, res) => {
     const _marca = new Marca({ Nombre: req.body.Nombre })
-    _marca.save(error => {
-        if (error) res.status(500).json({ error: true })
-        else res.status(200).json({ error: false })
+    _marca.save((error, result) => {
+        if (error) return res.status(500).json({ error: true })
+        else return res.status(200).json({ error: false, id: result.id })
     })
 }
 
