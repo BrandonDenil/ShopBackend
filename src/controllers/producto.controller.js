@@ -1,4 +1,9 @@
 'use strict'
+const {
+    listarProductos,
+    listarProductoPorCategoria,
+    crearProducto,
+} = require('../services/producto.service')
 const Producto = require('../models/Producto.model')
 const Categoria = require('../models/CategoriaProducto.model')
 const fs = require('fs')
@@ -6,68 +11,28 @@ const path = require('path')
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId;
 
-exports.listarProducto = (req, res) => {
-    Producto.aggregate([
-        { $lookup: { from: "categorias", localField: "Categoria", foreignField: "_id", as: "_categoria" } },
-        { $lookup: { from: "marcas", localField: "Marca", foreignField: "_id", as: "_marca" } }
-    ]).then(data => {
-        const filteredData = data.map(item => {
-            item.Categoria = item._categoria[0].Categoria
-            item.Marca = item._marca[0].Nombre
-            return item
-        })
-        res.status(200).json(filteredData)
-    }).catch(error => {
+exports.listarProducto = async (req, res) => {
+    try{
+        const  productos = await listarProductos()
+        console.log(productos)
+        res.status(200).json(productos)
+    }catch(Exeption ){
         res.status(500).json({ error: true, message: error || "Error interno" })
-    })
+    }
 }
 
-exports.listarProductosCategoria = (req, res) => {
-    Categoria.aggregate([
-        { $match: { _id: ObjectId(req.params.categoria) } },
-        {
-            $lookup: { from: "productos", localField: "_id", foreignField: "Categoria", as: "_productos" }
-        },
-        {
-            $lookup: { from: "marcas", localField: "_id", foreignField: "Marca", as: "_marcas" }
-        },
-        {
-            $project: {
-                "_id": 0,
-                "Categoria": 1,
-                "_productos.Nombre": 1,
-                "_productos.Precio": 1,
-                "_productos.Cantidad": 1,
-                "_productos.Descripcion": 1,
-                "_productos.Descuento": 1,
-                "_productos.Resenias": 1,
-                "_marcas.Nombre": 1
-            }
-        }
-    ])
-        .then(data => {
-            res.status(200).json(data)
-        }).catch(err => {
-            res.status(500).json({
-                message:
-                    err.message || "Error al obtener datos"
-            })
-        })
-
+exports.listarProductosCategoria = async (req, res) => {
+    try{
+        const productos = await listarProductoPorCategoria(req.params.categoria);
+        res.status(200).json(productos)
+    }catch(Exeption ){
+        res.status(500).json({ error: true, message: error || "Error interno" })
+    }
 }
 
 exports.nuevoProducto = async (req, res) => {
 
-    const _newProducto = new Producto({
-        Nombre: req.body.Nombre,
-        Precio: req.body.Precio,
-        Cantidad: req.body.Cantidad,
-        Descripcion: req.body.Descripcion,
-        Categoria: req.body.Categoria,
-        Marca: req.body.Marca,
-        DetallesTecnicos: req.body.Detalles
-    })
-
+    const _newProducto = crearProducto(req.body)
     _newProducto.save((error, result) => {
         return res.json({ message: "OK", error: false, id: result.id })
     })
