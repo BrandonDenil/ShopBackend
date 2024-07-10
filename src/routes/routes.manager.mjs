@@ -1,4 +1,4 @@
-import { ProductRouter } from "./Product.route.mjs";
+import { ProductRouter } from "./product.route.mjs";
 
 export class RoutesManager{
 

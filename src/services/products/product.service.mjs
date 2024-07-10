@@ -48,24 +48,40 @@ export class ProductService {
         return newProduct;
     }
 
-    static updateProduct() {
-        const _newProducto = Producto.findByIdAndUpdate(req.params.id, {
-            Name: req.body.Name,
-            Price: req.body.Price,
-            Quantity: req.body.Quantity,
-            Description: req.body.Description,
-            Category: req.body.Category,
-            Brand: req.body.Brand
+    static async updateProduct(id, data) {
+        const newProduct = await Product.findByIdAndUpdate(id, {
+            name: data.name,
+            price: data.price,
+            quantity: data.quantity,
+            description: data.description,
+            category: data.category,
+            brand: data.brand,
+            details: data.details,
+            images: data.images,
+            discount: data.discount,
+            reviews: data.reviews
         })
 
-        _newProducto.save().then(saveDoc => {
-            res.status(200).send({ message: "Elemento editado!", error: false })
-        })
+        await newProduct.save();
+        return;
     }
 
-    static deleteProduct(id) {
-        Producto.findByIdAndDelete(id, () => {
-            return res.status(200).send({ message: "Elemento eliminado", error: false })
-        })
+    static async deleteProduct(id) {
+        const result = await ProductModel.findByIdAndDelete(id);
+        return result
+    }
+
+    static addImagesToProduct(){
+        // const file = req.files.file
+        //     const path = `storage/${req.params.id}`
+        //     let images = []
+        //     for (let i = 0; i < file.length; i++) {
+        //         fs.mkdir(`${path}`, err => {
+        //             file[i].mv(path.resolve(`${path}/${file[i].name}`), err => {
+        //                 images.push({ Url: `${path}/${file[i].name}`, Nombre: file[i].name })
+        //             })
+        //         })
+        //     }
+        
     }
 }

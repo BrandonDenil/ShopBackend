@@ -17,11 +17,11 @@ export const ProductModel = mongoose.model('Product',mongoose.Schema({
         url:String
     }],
     discount:{
-        Total:Number,
-        Percentage:Number,
-        DateBegin:Date,
-        DateEnd:Date,
-        Code:String
+        total:Number,
+        percentage:Number,
+        dateBegin:Date,
+        dateEnd:Date,
+        code:String
     },
     reviews: [{
         comment: String,
