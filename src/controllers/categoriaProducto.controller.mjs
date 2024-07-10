@@ -1,4 +1,4 @@
-const CategoriaProducto = require('../models/CategoriaProducto.model')
+import { ProductCategoryModel } from "../models/ProductCategory.model.mjs"
 
 exports.listarCategorias = (req, res) => {
     CategoriaProducto.find({}).then(result => {

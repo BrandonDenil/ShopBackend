@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require("express")
-const MongoBD = require('./src/db/conection')
+const MongoBD = require('./src/db/mongodb.connection')
 const Route= require('./routes')
 const ServerConfiguration = require('./server.configuration')
 

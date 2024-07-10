@@ -2,9 +2,10 @@
   "name": "shopping",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/app.mjs",
+  "type": "module",
   "scripts": {
-    "server": "nodemon server.js",
+    "start": "node ./src/app.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -19,6 +20,7 @@
     "express-fileupload": "^1.2.1",
     "express-session": "^1.17.2",
     "hbs": "^4.1.2",
+    "module-alias": "^2.2.3",
     "mongoose": "^5.13.7",
     "nodemailer": "^6.6.3",
     "nodemon": "^2.0.16",

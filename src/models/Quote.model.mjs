@@ -2,7 +2,9 @@
 
 const mongoose = require('mongoose')
 
-module.exports = mongoose.model('Consulta', mongoose.Schema({
+
+//todo: fix 
+module.exports = mongoose.model('Quote', mongoose.Schema({
     Nombre: String,
     Correo: String,
     Motivo: String,

@@ -4,9 +4,7 @@ const session = require('express-session')
 const cors = require("cors")
 const fileUpload = require('express-fileupload')
 const express = require("express")
-const path = require('path');
-const hbs = require('hbs');
-const nodemailer = require('nodemailer')
+
 
 
 module.exports = (app) => {
